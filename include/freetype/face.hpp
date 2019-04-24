@@ -7,6 +7,7 @@
 #include "size_metrics.hpp"
 #include <memory>
 #include <functional>
+#include <string>
 
 namespace freetype {
 	typedef unsigned glyph_index;
@@ -70,6 +71,10 @@ namespace freetype {
 
 		inline size_metrics get_size_metrics() {
 			return ft_face->size->metrics;
+		}
+
+		inline const std::string style_name() {
+			return ft_face->style_name;
 		}
 	};
 }
