@@ -6,14 +6,14 @@ namespace freetype {
 	class bbox {
 		friend class face;
 
-		FT_BBox ft_bbox;
+		FT_BBox handle;
 
-		bbox(FT_BBox raw):ft_bbox{ raw }{}
+		bbox(FT_BBox handle):handle{ handle }{}
 	public:
 	
-		inline long x_min() { return ft_bbox.xMin; }
-		inline long y_min() { return ft_bbox.yMin; }
-		inline long x_max() { return ft_bbox.xMax; }
-		inline long y_max() { return ft_bbox.yMax; }
+		inline long x_min() { return handle.xMin; }
+		inline long y_min() { return handle.yMin; }
+		inline long x_max() { return handle.xMax; }
+		inline long y_max() { return handle.yMax; }
 	};
 }

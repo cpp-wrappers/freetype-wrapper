@@ -1,6 +1,7 @@
 #pragma once
 
 #include "freetype_fwd.hpp"
+#include <type_traits>
 
 namespace freetype {
     class glyph_slot;
@@ -8,16 +9,16 @@ namespace freetype {
     class bitmap {
         friend glyph_slot;
     
-        FT_Bitmap ft_bitmap;
+        FT_Bitmap handle;
 
-        bitmap(FT_Bitmap raw) : ft_bitmap{ raw } {}
+        bitmap(FT_Bitmap handle) : handle{ handle } {}
     public:
         bitmap(const bitmap&) = delete;
 
         template<class T>
-        inline T* data() { return (T*)(ft_bitmap.buffer); }
-        inline unsigned rows() { return ft_bitmap.rows; }
-        inline unsigned width() { return ft_bitmap.width; }
-        inline unsigned pitch() { return ft_bitmap.pitch; }
+        inline std::enable_if<sizeof(T) == 1, T*> data() { return (T*)(handle.buffer); }
+        inline unsigned rows() { return handle.rows; }
+        inline unsigned width() { return handle.width; }
+        inline unsigned pitch() { return handle.pitch; }
     };
 }

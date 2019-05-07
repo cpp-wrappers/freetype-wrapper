@@ -11,23 +11,26 @@ namespace freetype {
 	class glyph_slot {
 		friend class face;
 		
-		FT_GlyphSlot ft_glyph_slot;
+		FT_GlyphSlot handle;
 		
-		glyph_slot() = default;
-		glyph_slot(FT_GlyphSlot raw): ft_glyph_slot{ raw } {}
+		glyph_slot(FT_GlyphSlot handle): handle{ handle } {}
+		glyph_slot() {}
 	public:
 		glyph_slot(glyph_slot&& g) {
-			ft_glyph_slot = std::exchange(g.ft_glyph_slot, nullptr);
+			handle = std::exchange(g.handle, nullptr);
 		}
-		glyph_slot& operator=(glyph_slot&&) = default;
+		glyph_slot& operator=(glyph_slot&& g) {
+			handle = std::exchange(g.handle, nullptr);
+			return *this;
+		}
+
 	public:
 		void render();
-		inline bitmap get_bitmap()
-		{ return {ft_glyph_slot->bitmap}; }
-		inline glyph_metrics get_metrics()
-		{ return {ft_glyph_slot->metrics}; }
+		
+		inline bitmap get_bitmap() { return handle->bitmap; }
+		inline glyph_metrics get_metrics() { return handle->metrics; }
 
-		inline int bitmap_left() { return ft_glyph_slot->bitmap_left; }
-		inline int bitmap_top() { return ft_glyph_slot->bitmap_top; }
+		inline int bitmap_left() { return handle->bitmap_left; }
+		inline int bitmap_top() { return handle->bitmap_top; }
 	};
 }

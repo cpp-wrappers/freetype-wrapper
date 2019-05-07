@@ -7,26 +7,20 @@ namespace freetype {
 
     class glyph_metrics {
         friend glyph_slot;
-        FT_Glyph_Metrics ft_metrics;
-        glyph_metrics(FT_Glyph_Metrics ft) : ft_metrics{ ft } {}
+        FT_Glyph_Metrics handle;
+
+        glyph_metrics(FT_Glyph_Metrics handle) : handle{ handle } {}
     public:
-        glyph_metrics() = default;
         glyph_metrics(const glyph_metrics&) = default;
         glyph_metrics& operator=(const glyph_metrics&) = default;
 
-        inline long width() {return ft_metrics.width;}
-        inline long height() {return ft_metrics.height;}
-        inline long horizontal_bearing_x()
-        {return ft_metrics.horiBearingX;}
-        inline long horizontal_bearing_y()
-        {return ft_metrics.horiBearingY;}
-        inline long horizontal_advance() 
-        {return ft_metrics.horiAdvance;}
-        inline long vertical_bearing_x()
-        {return ft_metrics.vertBearingX;}
-        inline long vertical_bearing_y()
-        {return ft_metrics.vertBearingY;}
-        inline long vertical_advance()
-        {return ft_metrics.vertAdvance;}
+        inline long width() {return handle.width;}
+        inline long height() {return handle.height;}
+        inline long horizontal_bearing_x() {return handle.horiBearingX;}
+        inline long horizontal_bearing_y() {return handle.horiBearingY;}
+        inline long horizontal_advance() {return handle.horiAdvance;}
+        inline long vertical_bearing_x() {return handle.vertBearingX;}
+        inline long vertical_bearing_y() {return handle.vertBearingY;}
+        inline long vertical_advance() {return handle.vertAdvance;}
     };
 }
