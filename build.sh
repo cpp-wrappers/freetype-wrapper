@@ -1,5 +1,5 @@
 mkdir -p build
 
-$CXX --std=c++17 \
+$CXX -Weverything -std=c++17 \
 -Iinclude \
 

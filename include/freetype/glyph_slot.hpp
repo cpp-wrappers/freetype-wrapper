@@ -6,7 +6,6 @@
 #include "bitmap.hpp"
 
 namespace freetype {
-	class face;
 
 	class glyph_slot {
 		friend class face;
@@ -25,7 +24,8 @@ namespace freetype {
 		}
 
 	public:
-		void render();
+
+		//void render();
 		
 		inline bitmap get_bitmap() { return handle->bitmap; }
 		inline glyph_metrics get_metrics() { return handle->metrics; }

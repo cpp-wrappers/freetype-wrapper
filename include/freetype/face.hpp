@@ -9,9 +9,10 @@
 #include <memory>
 #include <functional>
 #include <string>
+#include "render_mode.hpp"
 
 namespace freetype {
-	typedef unsigned glyph_index;
+	using glyph_index = uint;
 
 	class glyph_slot;
 
@@ -19,20 +20,35 @@ namespace freetype {
 		friend class library;
 
 		FT_Face handle;
-		glyph_slot glyph;
-		size* size_ptr;
+		glyph_slot glyph_slot_;
+		size size_;
 
 		face(FT_Face handle)
-		:handle{ handle } {
-			size_ptr = 
+		:
+		handle{ handle },
+		glyph_slot_{handle->glyph},
+		size_{handle->size}
+		{
+			handle->generic.data = this;
+			handle->generic.finalizer = [](void* data) {
+				(*(face*)data).~face();
+			};
 		}
 	public:
-		face(face&& r) {
+		face(face&& r)
+		:
+		glyph_slot_{std::move(r.glyph_slot_)},
+		size_{std::move(r.size_)}
+		{
 			handle = std::exchange(r.handle, nullptr);
+			handle->generic.data = this;
 		}
 
 		face& operator=(face&& f) {
+			glyph_slot_ = std::move(f.glyph_slot_);
+			size_ = std::move(f.size_);
 			handle = std::exchange(f.handle, nullptr);
+			handle->generic.data = this;
 			return *this;
 		}
 
@@ -56,20 +72,16 @@ namespace freetype {
 			return handle->bbox;
 		}
 
-		inline void load_glyph(glyph_index index) {
+		inline void load_and_render_glyph(glyph_index index, render_mode rm) {
 			internal::check_for_error (
-				FT_Load_Glyph(handle, index, FT_LOAD_RENDER)
+				FT_Load_Glyph(handle, index, FT_LOAD_RENDER | FT_LOAD_TARGET_((uint)rm))
 			);
-
 			
-			glyph.handle = handle->glyph;
-
-			//handle->glyph->generic.data = new glyph_slot(handle->glyph);
-			//handle->glyph->generic.finalizer = [](void* g){ delete (glyph_slot*)g; };
+			glyph_slot_.handle = handle->glyph;
 		}
 
 		inline glyph_slot& glyph() {
-			return glyph;
+			return glyph_slot_;
 		}
 
 		inline unsigned short units_per_em() {
@@ -77,7 +89,7 @@ namespace freetype {
 		}
 
 		inline size& get_size() {
-			return *size_ptr;
+			return size_;
 		}
 
 		inline const std::string style_name() {

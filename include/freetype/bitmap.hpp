@@ -16,7 +16,7 @@ namespace freetype {
         bitmap(const bitmap&) = delete;
 
         template<class T>
-        inline std::enable_if<sizeof(T) == 1, T*> data() { return (T*)(handle.buffer); }
+        inline std::enable_if_t<sizeof(T) == 1, T*> data() { return (T*)handle.buffer; }
         inline unsigned rows() { return handle.rows; }
         inline unsigned width() { return handle.width; }
         inline unsigned pitch() { return handle.pitch; }

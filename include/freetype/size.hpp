@@ -13,11 +13,18 @@ class size {
 
     size(FT_Size handle):handle{handle} {
         handle->generic.data = this;
-        handle->generic.finalizer = [](void* p){delete (size*)p;};
+        handle->generic.finalizer = [](void* p) {
+            (*((size*)p)).~size();
+        };
     }
 
 public:
     size(size&& r) {
+        handle = std::exchange(r.handle, nullptr);
+        handle->generic.data = this;
+    }
+
+    size& operator=(size&& r) {
         handle = std::exchange(r.handle, nullptr);
         handle->generic.data = this;
     }
@@ -30,7 +37,7 @@ public:
 
     using size_metrics = FT_Size_Metrics;
 
-    size_metrics get_size_metrics() { return handle->metrics; }
+    const size_metrics metrics() { return handle->metrics; }
 };
 
 }

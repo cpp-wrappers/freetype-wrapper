@@ -10,7 +10,7 @@ class std_cpp_ft_stream : public FT_StreamRec_ {
 public:
     std_cpp_ft_stream(IStream&& istream)
     :
-    istream{std::forward(istream)}
+    istream{std::forward<IStream>(istream)}
     {
         base = nullptr;
         size = 0x7FFFFFFF;
@@ -23,7 +23,7 @@ public:
             u_long count
         ) -> u_long
         {
-            auto istream = ((std_ft_stream*)stream)->istream; 
+            auto& istream = ((std_cpp_ft_stream*)stream)->istream; 
             istream.seekg(offset, std::ios::beg);
             if(count == 0)
                 return 0;
@@ -31,9 +31,9 @@ public:
             return istream.gcount();
         };
 
-        //close = [](FT_Stream  stream) {
-        //    ((std_ft_stream*)stream)->istream.release();
-        //};
+        close = [](FT_Stream  stream) {
+            delete (std_cpp_ft_stream*)stream;
+        };
     }
 };
 

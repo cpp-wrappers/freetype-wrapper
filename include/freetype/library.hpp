@@ -27,12 +27,12 @@ namespace freetype {
 			FT_Face face_handle;
 			FT_Open_Args args;
 			args.flags = FT_OPEN_STREAM;
-			args.stream = new std_cpp_ft_stream(std::forward(istream));
+			args.stream = new std_cpp_ft_stream(std::forward<IStream>(istream));
 
 			internal::check_for_error(FT_Open_Face(handle, &args, 0, &face_handle));
 			face face_wrapper(face_handle);
 
-			using generic_data_t = std::pair<face*, std_cpp_ft_stream*>;
+			/*using generic_data_t = std::pair<face*, std_cpp_ft_stream<IStream>*>;
 
 			face_handle->generic.data = new generic_data_t(
 				&face_wrapper,
@@ -47,9 +47,9 @@ namespace freetype {
 				
 				delete pair->second;
 				delete pair;
-			};
+			};*/
 
-			return face;
+			return face_wrapper;
 		}
 	};
 }
