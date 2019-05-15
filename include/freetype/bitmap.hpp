@@ -2,6 +2,7 @@
 
 #include "freetype_fwd.hpp"
 #include <type_traits>
+#include "pixel_mode.hpp"
 
 namespace freetype {
     class glyph_slot;
@@ -20,5 +21,6 @@ namespace freetype {
         inline unsigned rows() { return handle.rows; }
         inline unsigned width() { return handle.width; }
         inline unsigned pitch() { return handle.pitch; }
+        inline pixel_mode pixel_mode() { return {handle.pixel_mode}; }
     };
 }

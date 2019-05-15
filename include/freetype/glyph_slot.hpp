@@ -24,9 +24,6 @@ namespace freetype {
 		}
 
 	public:
-
-		//void render();
-		
 		inline bitmap get_bitmap() { return handle->bitmap; }
 		inline glyph_metrics get_metrics() { return handle->metrics; }
 

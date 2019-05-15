@@ -27,6 +27,7 @@ public:
     size& operator=(size&& r) {
         handle = std::exchange(r.handle, nullptr);
         handle->generic.data = this;
+        return *this;
     }
 
     ~size() {
