@@ -36,9 +36,7 @@ public:
         );
     }
 
-    using size_metrics = FT_Size_Metrics;
-
-    const size_metrics metrics() { return handle->metrics; }
+    const size_metrics metrics() { return {handle->metrics}; }
 };
 
 }

@@ -17,10 +17,16 @@ namespace freetype {
         bitmap(const bitmap&) = delete;
 
         template<class T>
-        inline std::enable_if_t<sizeof(T) == 1, T*> data() { return (T*)handle.buffer; }
-        inline unsigned rows() { return handle.rows; }
-        inline unsigned width() { return handle.width; }
-        inline unsigned pitch() { return handle.pitch; }
-        inline pixel_mode pixel_mode() { return {handle.pixel_mode}; }
+        inline std::enable_if_t<sizeof(T) == 1, T*>
+        data() { return (T*)handle.buffer; }
+        
+        inline uint rows() { return handle.rows; }
+        inline uint width() { return handle.width; }
+        inline uint pitch() { return handle.pitch; }
+        inline uint num_grays() { return handle.num_grays; }
+
+        inline pixel_mode pixel_mode() {
+            return internal::from_token(handle.pixel_mode); 
+        }
     };
 }
