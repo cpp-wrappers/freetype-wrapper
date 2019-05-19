@@ -12,19 +12,19 @@ namespace freetype {
         :handle{ handle } {}
     public:
         template<class Vec2>
-        Vec2 ppem() {
+        Vec2 ppem() const {
             return {x_ppem(), y_ppem()};
         }
 
-        u_short x_ppem() {
+        u_short x_ppem() const {
             return handle.x_ppem;
         }
 
-        u_short y_ppem() {
+        u_short y_ppem() const {
             return handle.y_ppem;
         }
 
-        long height() {
+        long height() const {
             return handle.height;
         }
 	};

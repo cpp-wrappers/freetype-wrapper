@@ -10,22 +10,29 @@ namespace freetype {
     class bitmap {
         friend glyph_slot;
     
-        FT_Bitmap handle;
+        FT_Bitmap& handle;
 
-        bitmap(FT_Bitmap handle) : handle{ handle } {}
+        bitmap(FT_Bitmap& handle) : handle{ handle } {}
     public:
+        bitmap(bitmap&& r) = default;
+
         bitmap(const bitmap&) = delete;
 
         template<class T>
-        inline std::enable_if_t<sizeof(T) == 1, T*>
+        std::enable_if_t<sizeof(T) == 1, T*>
         data() { return (T*)handle.buffer; }
         
-        inline uint rows() { return handle.rows; }
-        inline uint width() { return handle.width; }
-        inline uint pitch() { return handle.pitch; }
-        inline uint num_grays() { return handle.num_grays; }
+        template<class Vec2>
+        Vec2 size() {
+            return {width(), rows()};
+        }
+        
+        uint rows() { return handle.rows; }
+        uint width() { return handle.width; }
+        uint pitch() { return handle.pitch; }
+        uint num_grays() { return handle.num_grays; }
 
-        inline pixel_mode pixel_mode() {
+        pixel_mode pixel_mode() {
             return internal::from_token(handle.pixel_mode); 
         }
     };

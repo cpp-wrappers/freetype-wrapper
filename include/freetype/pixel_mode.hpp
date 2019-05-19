@@ -12,21 +12,22 @@ struct pixel_mode {
     bool operator==(const pixel_mode& pm) {
         return token==pm.token && bits == pm.bits;
     }
-}
+};
 
-none{FT_PIXEL_MODE_NONE, 0},
-mono{FT_PIXEL_MODE_MONO, 1},
-gray{FT_PIXEL_MODE_GRAY, 8},
-gray2{FT_PIXEL_MODE_GRAY2, 2},
-gray4{FT_PIXEL_MODE_GRAY4, 4},
-lcd{FT_PIXEL_MODE_LCD, 8*3},
-lcd_v{FT_PIXEL_MODE_LCD_V, 8*3},
-bgra{FT_PIXEL_MODE_BGRA, 8*4};
+constexpr pixel_mode 
+    none{FT_PIXEL_MODE_NONE, 0},
+    mono{FT_PIXEL_MODE_MONO, 1},
+    gray{FT_PIXEL_MODE_GRAY, 8},
+    gray2{FT_PIXEL_MODE_GRAY2, 2},
+    gray4{FT_PIXEL_MODE_GRAY4, 4},
+    lcd{FT_PIXEL_MODE_LCD, 8*3},
+    lcd_v{FT_PIXEL_MODE_LCD_V, 8*3},
+    bgra{FT_PIXEL_MODE_BGRA, 8*4};
 
 namespace internal
 {
 
-pixel_mode from_token(u_char token) {
+constexpr pixel_mode from_token(u_char token) {
     switch(token) {
         case FT_PIXEL_MODE_NONE : return none;
         case FT_PIXEL_MODE_MONO : return mono;
