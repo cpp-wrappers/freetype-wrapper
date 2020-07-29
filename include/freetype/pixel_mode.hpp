@@ -2,12 +2,13 @@
 
 #include "freetype_fwd.hpp"
 #include <stdexcept>
+#include <cstdint>
 
 namespace freetype {
 
 struct pixel_mode {
-    const u_char token;
-    const u_char bits;
+    const uint8_t token;
+    const uint8_t bits;
 
     bool operator==(const pixel_mode& pm) {
         return token==pm.token && bits == pm.bits;
@@ -27,7 +28,7 @@ constexpr pixel_mode
 namespace internal
 {
 
-constexpr pixel_mode from_token(u_char token) {
+constexpr pixel_mode from_token(uint8_t token) {
     switch(token) {
         case FT_PIXEL_MODE_NONE : return none;
         case FT_PIXEL_MODE_MONO : return mono;

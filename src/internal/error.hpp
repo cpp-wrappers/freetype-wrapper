@@ -3,6 +3,7 @@
 #include <string>
 #include "../freetype_fwd.hpp"
 #include <stdexcept>
+#include <charconv>
 
 namespace freetype {
 
@@ -18,9 +19,16 @@ namespace internal {
     }
 
     inline void check_for_error(int error_code) {
-        const char* error = error_string(error_code);
-        if(error)
-            throw freetype_error(error);
+        if(!error_code)
+            return;
+
+        if(auto str = error_string(error_code))
+            throw freetype_error{str};
+        else {
+            char arr[10];
+            auto [last, err] = std::to_chars(arr, arr+10, error_code, 16);
+            throw freetype_error{std::string{arr, last}.c_str()};
+        }
     }
 }
 }

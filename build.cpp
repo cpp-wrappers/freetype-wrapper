@@ -6,11 +6,13 @@
 #include <fstream>
 #include <optional>
 #include "cxx_exec/clang_driver.hpp"
+#include "clap/gnu_clap.hpp"
 
 using namespace std;
 using namespace filesystem;
 
-void compile_freetype() {
+void exec(vector<string> args) {
+
     path objects_p{"build/freetype2/object"};
     create_directories(objects_p);
 
@@ -85,9 +87,4 @@ void compile_freetype() {
         comp.input_files.clear();
         command_executor{"ar", {"-rcv", "build/freetype2/libfreetype.a", comp.output->string()}}.execute();
     }
-}
-
-void exec(vector<string> args) {
-    create_directory("build");
-    compile_freetype();
 }
