@@ -1,90 +1,81 @@
 #include <string>
 #include <vector>
 #include <filesystem>
-#include <map>
 #include <utility>
-#include <fstream>
-#include <optional>
-#include "cxx_exec/clang_driver.hpp"
+#include <set>
+#include "cxx_exec/gcc_like_driver.hpp"
 #include "clap/gnu_clap.hpp"
+#include "cxx_exec/ext/build/configuration.hpp"
+#include "cxx_exec/environment.hpp"
+#include "cxx_exec/ar.hpp"
 
 using namespace std;
 using namespace filesystem;
 
-void exec(vector<string> args) {
+inline void log(auto v) {
+    cout<<"[freetype-wrapper] "<<v<<"\n";
+    cout.flush();
+}
 
-    path objects_p{"build/freetype2/object"};
+void exec(vector<string> args) {
+    log("start");
+    gnu::clap clap;
+
+    string config_name;
+    path ft_lib;
+    path ft_include;
+    clap.required_option("configuration", [&](string_view arg) {
+        config_name = arg;
+    });
+    clap.required_option("ft-lib", [&](string_view arg) {
+        ft_lib = arg;
+    });
+    clap.required_option("ft-include", [&](string_view arg) {
+        ft_include = arg;
+    });
+    clap.parse(args.begin(), args.end());
+
+    auto& conf = get_configuration(config_name);
+
+    auto cc = environment::cxx_compile_command_builder();
+    cc.std(gcc_like_driver::cxx20);
+    cc.include("include").include(ft_include);
+    cc.out_type(gcc_like_driver::object_file);
+    conf.apply(cc);
+
+    path build_conf{path{"build"}/conf.name};
+    path objects_p{build_conf/"objects"};
     create_directories(objects_p);
 
-    {
-        struct module {string clazz; string name;};
+    vector<path> objects;
+    path lib{build_conf/"libfreetype-wrapper.a"};
 
-        vector<module> modules {
-            {"FT_Driver_ClassRec", "tt_driver_class"},
-            {"FT_Module_Class", "sfnt_module_class"}
-        };
+    for(auto de : directory_iterator{"src"}) {
+        path p{de};
+        if(p.extension() != ".cpp")
+            continue;
 
-        ofstream modules_s{"build/freetype2/modules.h"};
-        modules_s << "#pragma once\n\n";
-        for(auto m : modules)
-            modules_s << "FT_USE_MODULE( "+m.clazz+", "+m.name+" )\n";
+        path in{p};
+        path out{objects_p/in.filename().replace_extension(".o")};
+
+        cc.input(in);
+        cc.out(out);
+        log("compile "+in.string());
+        environment::execute(cc);
+        cc.clear_inputs();
+        objects.push_back(out);
     }
 
-    {
-        struct option {
-            bool define;
-            string name;
-            optional<string> value;
-            option(const char* name, const char* value):define{true},name{name},value{value}{}
-            option(bool define, string name):define{define},name{name}{}
-        };
+    if(exists(lib)) remove(lib);
 
-        vector<option> options {
-            {"FT_RENDER_POOL_SIZE", "16384L"},
-            {"FT_MAX_MODULES", "32"},
-            {false, "FT_CONFIG_OPTION_USE_MODULE_ERRORS"},
-            {"T1_MAX_CHARSTRINGS_OPERANDS", "256"},
-            {"T1_MAX_SUBRS_CALLS", "16"}
-        };
+    environment::execute(
+        ar::insert().verbose()
+        .thin()
+        .to_archive(lib)
+        .create_if_not_exists()
+        .members(objects.begin(), objects.end())
+        .member(ft_lib)
+    );
 
-        ofstream options_s{"build/freetype2/options.h"};
-        options_s << "#pragma once\n\n#include <ft2build.h>\n\n";
-        for(auto o : options) {
-            options_s << "#" << (o.define?"define":"undef") << " "+o.name;
-            if(o.value)
-                options_s << "  "+*o.value;
-            options_s << "\n";
-        }
-    }
-
-    vector<string> srcs {
-        "base/ftsystem",
-        "base/ftinit",
-        "base/ftdebug",
-        "base/ftbase",
-        "base/ftbbox",
-        "base/ftglyph",
-        "base/ftbitmap",
-        "sfnt/sfnt",
-        "truetype/truetype",
-        "psnames/psnames"
-    };
-    
-    clang::driver::executor comp{"clang", clang::driver::lang_stds::c17};
-
-    comp.include_path("freetype2/include");
-    comp.include_path("build/freetype2");
-    comp.args.push_back("-c");
-    comp.args.push_back("-DFT_CONFIG_MODULES_H=\"<modules.h>\"");
-    comp.args.push_back("-DFT_CONFIG_OPTIONS_H=\"<options.h>\"");
-    comp.args.push_back("-DFT2_BUILD_LIBRARY");
-
-    for(auto src : srcs) {
-        comp.input_file("freetype2/src/"+src+".c");
-        comp.output = objects_p/(src+".o");
-        create_directories((objects_p/src).remove_filename());
-        comp.execute();
-        comp.input_files.clear();
-        command_executor{"ar", {"-rcv", "build/freetype2/libfreetype.a", comp.output->string()}}.execute();
-    }
+    log("done");
 }

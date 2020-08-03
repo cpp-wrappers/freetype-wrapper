@@ -1,7 +1,5 @@
 #pragma once
 
-#include "freetype_fwd.hpp"
-
 namespace freetype {
     class size_metrics {
         friend class size;

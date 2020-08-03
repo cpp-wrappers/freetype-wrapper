@@ -1,6 +1,5 @@
 #pragma once
 
-#include "freetype_fwd.hpp"
 #include <type_traits>
 #include "pixel_mode.hpp"
 

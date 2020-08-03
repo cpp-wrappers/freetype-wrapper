@@ -1,6 +1,5 @@
 #pragma once
 
-#include "freetype_fwd.hpp"
 #include <stdexcept>
 #include <cstdint>
 

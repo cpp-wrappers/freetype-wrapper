@@ -2,23 +2,24 @@
 
 #include "freetype/ftsystem.h"
 #include <memory>
-#include <ios>
+#include <istream>
 #include <functional>
 
-namespace freetype {
+using namespace std;
 
-class std_cpp_ft_stream : public FT_StreamRec_ {
-    std::unique_ptr<std::istream> istream;
+namespace ft {
+
+class istream_ft_stream : public FT_StreamRec_ {
+    unique_ptr<istream> istream;
 
 public:
-    template<class IStream>
-    std_cpp_ft_stream(IStream&& istream, void(*on_close)(std_cpp_ft_stream*))
+    istream_ft_stream(unique_ptr<std::istream> is, void(*on_close)(istream_ft_stream*))
     :
-    istream{std::make_unique<IStream>(std::forward<IStream>(istream))}
+    istream{move(is)}
     {
-        istream.exceptions(std::ios::badbit | std::ios::failbit);
+        istream->exceptions(ios::badbit | ios::failbit);
         base = nullptr;
-        pos = istream.tellg();
+        pos = istream->tellg();
         size = 0x7FFFFFFF;
         cursor=0;
 
@@ -29,7 +30,7 @@ public:
             u_long count
         ) -> u_long
         {
-            auto& istream = ((std_cpp_ft_stream*)stream)->istream;
+            auto& istream = ((istream_ft_stream*)stream)->istream;
 
             if(!count && offset > stream->size)
                 return 1;
