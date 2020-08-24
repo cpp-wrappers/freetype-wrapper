@@ -3,36 +3,33 @@
 #include <type_traits>
 #include "pixel_mode.hpp"
 
-namespace freetype {
+namespace ft {
     class glyph_slot;
 
     class bitmap {
         friend glyph_slot;
     
-        FT_Bitmap& handle;
-
-        bitmap(FT_Bitmap& handle) : handle{ handle } {}
+        void* handle;
+        unsigned char* _data();
+        bitmap(void* handle) : handle{ handle } {}
     public:
-        bitmap(bitmap&& r) = default;
 
-        bitmap(const bitmap&) = delete;
-
-        template<class T>
+        template<class T=unsigned char>
         std::enable_if_t<sizeof(T) == 1, T*>
-        data() { return (T*)handle.buffer; }
+        data() {
+            return (T*)_data();
+        }
         
         template<class Vec2>
-        Vec2 size() {
+        Vec2 dimension() {
             return {width(), rows()};
         }
         
-        uint rows() { return handle.rows; }
-        uint width() { return handle.width; }
-        uint pitch() { return handle.pitch; }
-        uint num_grays() { return handle.num_grays; }
+        unsigned rows();
+        unsigned width();
+        unsigned pitch();
+        unsigned num_grays();
 
-        pixel_mode pixel_mode() {
-            return internal::from_token(handle.pixel_mode); 
-        }
+        pixel_mode pixel_mode();
     };
 }

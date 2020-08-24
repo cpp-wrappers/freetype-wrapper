@@ -3,7 +3,7 @@
 #include <stdexcept>
 #include <cstdint>
 
-namespace freetype {
+namespace ft {
 
 struct pixel_mode {
     const uint8_t token;
@@ -15,28 +15,23 @@ struct pixel_mode {
 };
 
 constexpr pixel_mode 
-    none{FT_PIXEL_MODE_NONE, 0},
-    mono{FT_PIXEL_MODE_MONO, 1},
-    gray{FT_PIXEL_MODE_GRAY, 8},
-    gray2{FT_PIXEL_MODE_GRAY2, 2},
-    gray4{FT_PIXEL_MODE_GRAY4, 4},
-    lcd{FT_PIXEL_MODE_LCD, 8*3},
-    lcd_v{FT_PIXEL_MODE_LCD_V, 8*3},
-    bgra{FT_PIXEL_MODE_BGRA, 8*4};
+    none{1, 0}, mono{2, 1}, gray{3, 8}, gray2{4, 2},
+    gray4{5, 4}, lcd{6, 8*3}, lcd_v{7, 8*3}, bgra{8, 8*4};
 
 namespace internal
 {
 
+// TODO
 constexpr pixel_mode from_token(uint8_t token) {
     switch(token) {
-        case FT_PIXEL_MODE_NONE : return none;
-        case FT_PIXEL_MODE_MONO : return mono;
-        case FT_PIXEL_MODE_GRAY : return gray;
-        case FT_PIXEL_MODE_GRAY2 : return gray2;
-        case FT_PIXEL_MODE_GRAY4 : return gray4;
-        case FT_PIXEL_MODE_LCD : return lcd;
-        case FT_PIXEL_MODE_LCD_V : return lcd_v;
-        case FT_PIXEL_MODE_BGRA : return bgra;
+        case 0 : return none;
+        case 1 : return mono;
+        case 2 : return gray;
+        case 3 : return gray2;
+        case 4 : return gray4;
+        case 5 : return lcd;
+        case 6 : return lcd_v;
+        case 7 : return bgra;
         default : throw std::logic_error("invalid freetype pixel mode token");
     }
 }

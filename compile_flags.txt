@@ -1,0 +1,2 @@
+-I../freetype2/include
+-std=c++20

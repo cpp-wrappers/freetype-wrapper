@@ -1,18 +1,22 @@
 #pragma once
 
-#include "face.hpp"
 #include <vector>
 #include <memory>
 #include <istream>
 #include <set>
 
+#include "face.hpp"
+
 namespace ft {
+
+	class face;
 
 	class library {
 		void* handle;
 
 	public:
 		library();
+		library(library&& r):handle{std::exchange(r.handle, nullptr)}{}
 		~library();
 
 		template<class IStream>
