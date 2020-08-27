@@ -8,15 +8,22 @@ namespace ft {
 template<class T, unsigned integer_bits>
 union fp_t {
     static constexpr unsigned fractional_bits = sizeof(T)*8-integer_bits;
-    T 
-        integer : integer_bits,
-        fractional : fractional_bits;
+    struct {
+        T 
+            fractional : fractional_bits,
+            integer : integer_bits;
+    };
     T val;
+public: 
+    explicit fp_t(T v) {
+        val = v;
+    }
 
-    explicit fp_t(T i, T f) {
+    fp_t(T i, T f) {
         integer = i;
         fractional = f;
     }
+
     explicit fp_t(float v) {
         integer = v;
         fractional = (v-integer) * std::exp2(fractional_bits);
