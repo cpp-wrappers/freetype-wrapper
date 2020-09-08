@@ -24,7 +24,7 @@ public:
         fractional = f;
     }
 
-    explicit fp_t(float v) {
+    fp_t(float v) {
         integer = v;
         fractional = (v-integer) * std::exp2(fractional_bits);
     }

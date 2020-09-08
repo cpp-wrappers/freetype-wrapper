@@ -1,2 +1,3 @@
 -I../freetype2/include
+-I../unified-math/include
 -std=c++20

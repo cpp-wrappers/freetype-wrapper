@@ -3,11 +3,11 @@
 #include <filesystem>
 #include <utility>
 #include <set>
-#include "gcc_like_driver.hpp"
+#include "cxx_exec/gcc_like_driver.hpp"
 #include "clap/gnu_clap.hpp"
-#include "build/configuration.hpp"
-#include "environment.hpp"
-#include "build/build.hpp"
+#include "cxx_exec/build/configuration.hpp"
+#include "cxx_exec/environment.hpp"
+#include "cxx_exec/build/build.hpp"
 #include <ranges>
 
 using namespace std;
@@ -50,6 +50,7 @@ void exec(vector<string> args) {
     auto cc = environment::cxx_compile_command_builder();
     cc.std(gcc_like_driver::cxx20);
     cc.include("include").include(ft_include);
+    cc.include("../unified-math");
     conf.apply(cc);
 
     path build_conf{path{"build"}/conf.name()};

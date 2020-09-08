@@ -2,6 +2,7 @@
 
 #include <type_traits>
 #include "pixel_mode.hpp"
+#include "unified_math/vec2.hpp"
 
 namespace ft {
     class glyph_slot;
@@ -14,17 +15,14 @@ namespace ft {
         bitmap(void* handle) : handle{ handle } {}
     public:
 
-        template<class T=unsigned char>
-        std::enable_if_t<sizeof(T) == 1, T*>
-        data() {
-            return (T*)_data();
+        unsigned char* data() {
+            return _data();
         }
         
-        template<class Vec2>
-        Vec2 dimension() {
-            return {width(), rows()};
-        }
+        template<uni::vec2ui Vec = uni::pair_ui>
+        Vec size() { return {width(), height()}; }
         
+        unsigned height() { return rows(); }
         unsigned rows();
         unsigned width();
         unsigned pitch();
